@@ -10,6 +10,7 @@ const modalAdd = document.querySelector('.modal__add'),
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
   modalBtnSubmit.disabled = true;
+  document.addEventListener('keydown', closeEscModal);
 });
 
 modalAdd.addEventListener('click', event => {
@@ -19,8 +20,17 @@ modalAdd.addEventListener('click', event => {
     target === modalAdd) {
     modalAdd.classList.add('hide');
     modalSubmit.reset();
+    document.removeEventListener('keydown', closeEscModal);
   }
 });
+
+const closeEscModal = evt => {
+  if (evt.code === 'Escape') {
+    modalAdd.classList.add('hide');
+    modalItem.classList.add('hide');
+    document.removeEventListener('keydown', closeEscModal);
+  }
+}
 
 const showModalItem = evt => {
   modalItem.classList.remove('hide');
@@ -32,17 +42,13 @@ const hideModalItem = evt => {
   document.body.style.overflow = '';
 };
 
-const closeEscModalItem = evt => {
-  if (evt.code === 'Escape') modalItem.classList.add('hide');
-};
-
 catalog.addEventListener('click', event => {
   const target = event.target.closest('.card');
 
   if (!target) return;
 
   showModalItem();
-  document.addEventListener('keydown', closeEscModalItem);
+  document.addEventListener('keydown', closeEscModal);
 });
 
 modalItem.addEventListener('click', event => {
@@ -50,6 +56,6 @@ modalItem.addEventListener('click', event => {
 
   if (target.closest('.modal__close') || target === modalItem) {
     hideModalItem();
-    document.removeEventListener('keydown', closeEscModalItem);
+    document.removeEventListener('keydown', closeEscModal);
   }
 });
