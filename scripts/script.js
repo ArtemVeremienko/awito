@@ -10,6 +10,7 @@ const modalAdd = document.querySelector('.modal__add'),
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
   modalBtnSubmit.disabled = true;
+  document.addEventListener('keydown', closeEscModalAdd);
 });
 
 modalAdd.addEventListener('click', event => {
@@ -19,8 +20,16 @@ modalAdd.addEventListener('click', event => {
     target === modalAdd) {
     modalAdd.classList.add('hide');
     modalSubmit.reset();
+    document.removeEventListener('keydown', closeEscModalAdd);
   }
 });
+
+const closeEscModalAdd = evt => {
+  if (evt.code === 'Escape') {
+    modalAdd.classList.add('hide');
+    document.removeEventListener('keydown', closeEscModalAdd);
+  }
+}
 
 const showModalItem = evt => {
   modalItem.classList.remove('hide');
@@ -33,7 +42,10 @@ const hideModalItem = evt => {
 };
 
 const closeEscModalItem = evt => {
-  if (evt.code === 'Escape') modalItem.classList.add('hide');
+  if (evt.code === 'Escape') {
+    modalItem.classList.add('hide');
+    document.removeEventListener('keydown', closeEscModalItem);
+  }
 };
 
 catalog.addEventListener('click', event => {
