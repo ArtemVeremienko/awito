@@ -10,40 +10,32 @@ const modalAdd = document.querySelector('.modal__add'),
   modalItem = document.querySelector('.modal__item'),
   modalBtnWarning = document.querySelector('.modal__btn-warning');
 
-const closeEscModal = event => {
-  if (event.code === 'Escape') {
-    modalAdd.classList.add('hide');
-    modalItem.classList.add('hide');
-    modalSubmit.reset();
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', closeEscModal);
-  }
-}
-
 const showModalItem = event => {
   modalItem.classList.remove('hide');
   document.body.style.overflow = 'hidden';
 };
 
-const hideModalItem = target => {
-  target.closest('.modal').classList.add('hide');
-  document.body.style.overflow = '';
-};
-
 const closeModal = event => {
   const target = event.target;
 
-  if (target.closest('.modal__close') || target.classList.contains('modal')) {
-    hideModalItem(target);
-    document.removeEventListener('keydown', closeEscModal);
-    if (target.closest('.modal__add')) modalSubmit.reset();
+  if (target.closest('.modal__close') ||
+    target.classList.contains('modal') ||
+    event.code === 'Escape') {
+    modalAdd.classList.add('hide');
+    modalItem.classList.add('hide');
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', closeModal);
+    if (target.closest('.modal__add')) {
+      modalSubmit.reset();
+      checkForm();
+    };
   }
 };
 
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
   document.body.style.overflow = 'hidden';
-  document.addEventListener('keydown', closeEscModal);
+  document.addEventListener('keydown', closeModal);
 });
 
 modalAdd.addEventListener('click', closeModal);
@@ -54,25 +46,26 @@ catalog.addEventListener('click', event => {
   if (!target) return;
 
   showModalItem();
-  document.addEventListener('keydown', closeEscModal);
+  document.addEventListener('keydown', closeModal);
 });
 
 modalItem.addEventListener('click', closeModal);
 
 // Form handlers
 
-modalSubmit.addEventListener('input', () => {
+const checkForm = event => {
   const isValidForm = [...modalSubmit.elements].filter(elem => elem.type !== 'submit').every(elem => elem.value);
 
   modalBtnSubmit.disabled = !isValidForm;
 
   isValidForm ? modalBtnWarning.style.display = 'none' : modalBtnWarning.style.display = '';
-});
+}
+
+modalSubmit.addEventListener('input', checkForm);
 
 modalSubmit.addEventListener('submit', event => {
   event.preventDefault();
   const modalSubmitData = new FormData(modalSubmit);
   dataBase.push(modalSubmitData);
-  modalBtnSubmit.disabled = true;
-  modalSubmit.reset();
+  closeModal({ target: modalAdd });
 });
