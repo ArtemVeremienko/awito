@@ -1,11 +1,14 @@
 'use strict';
 
+const dataBase = [];
+
 const modalAdd = document.querySelector('.modal__add'),
   addAd = document.querySelector('.add__ad'),
   modalBtnSubmit = document.querySelector('.modal__btn-submit'),
   modalSubmit = document.querySelector('.modal__submit'),
   catalog = document.querySelector('.catalog'),
-  modalItem = document.querySelector('.modal__item');
+  modalItem = document.querySelector('.modal__item'),
+  modalBtnWarning = document.querySelector('.modal__btn-warning');
 
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
@@ -58,4 +61,28 @@ modalItem.addEventListener('click', event => {
     hideModalItem();
     document.removeEventListener('keydown', closeEscModal);
   }
+});
+
+modalSubmit.addEventListener('input', () => {
+  const isValidForm = [...modalSubmit.elements].filter(elem => elem.type !== 'submit').every(elem => elem.value);
+
+  const defaultText = modalBtnWarning.textContent;
+
+  if (isValidForm) {
+    modalBtnSubmit.disabled = !isValidForm;
+    modalBtnWarning.style.display = 'none';
+  } else {
+    modalBtnWarning.style.display = '';
+  }
+
+
+});
+
+modalSubmit.addEventListener('submit', event => {
+  event.preventDefault();
+  const modalSubmitData = new FormData(modalSubmit);
+  console.log(...modalSubmitData);
+  dataBase.push(modalSubmitData);
+  console.log(dataBase);
+  modalSubmit.reset();
 });
