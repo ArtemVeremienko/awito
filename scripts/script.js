@@ -15,6 +15,7 @@ const closeEscModal = event => {
     modalAdd.classList.add('hide');
     modalItem.classList.add('hide');
     modalSubmit.reset();
+    document.body.style.overflow = '';
     document.removeEventListener('keydown', closeEscModal);
   }
 }
@@ -42,6 +43,7 @@ const closeModal = event => {
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
   modalBtnSubmit.disabled = true;
+  document.body.style.overflow = 'hidden';
   document.addEventListener('keydown', closeEscModal);
 });
 
