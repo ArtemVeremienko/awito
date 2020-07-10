@@ -10,40 +10,42 @@ const modalAdd = document.querySelector('.modal__add'),
   modalItem = document.querySelector('.modal__item'),
   modalBtnWarning = document.querySelector('.modal__btn-warning');
 
+const closeEscModal = event => {
+  if (event.code === 'Escape') {
+    modalAdd.classList.add('hide');
+    modalItem.classList.add('hide');
+    modalSubmit.reset();
+    document.removeEventListener('keydown', closeEscModal);
+  }
+}
+
+const showModalItem = event => {
+  modalItem.classList.remove('hide');
+  document.body.style.overflow = 'hidden';
+};
+
+const hideModalItem = target => {
+  target.closest('.modal').classList.add('hide');
+  document.body.style.overflow = '';
+};
+
+const closeModal = event => {
+  const target = event.target;
+
+  if (target.closest('.modal__close') || target.classList.contains('modal')) {
+    hideModalItem(target);
+    document.removeEventListener('keydown', closeEscModal);
+    if (target.closest('.modal__add')) modalSubmit.reset();
+  }
+};
+
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
   modalBtnSubmit.disabled = true;
   document.addEventListener('keydown', closeEscModal);
 });
 
-modalAdd.addEventListener('click', event => {
-  const target = event.target;
-
-  if (target.closest('.modal__close') ||
-    target === modalAdd) {
-    modalAdd.classList.add('hide');
-    modalSubmit.reset();
-    document.removeEventListener('keydown', closeEscModal);
-  }
-});
-
-const closeEscModal = evt => {
-  if (evt.code === 'Escape') {
-    modalAdd.classList.add('hide');
-    modalItem.classList.add('hide');
-    document.removeEventListener('keydown', closeEscModal);
-  }
-}
-
-const showModalItem = evt => {
-  modalItem.classList.remove('hide');
-  document.body.style.overflow = 'hidden';
-};
-
-const hideModalItem = evt => {
-  modalItem.classList.add('hide');
-  document.body.style.overflow = '';
-};
+modalAdd.addEventListener('click', closeModal);
 
 catalog.addEventListener('click', event => {
   const target = event.target.closest('.card');
@@ -54,14 +56,9 @@ catalog.addEventListener('click', event => {
   document.addEventListener('keydown', closeEscModal);
 });
 
-modalItem.addEventListener('click', event => {
-  const target = event.target;
+modalItem.addEventListener('click', closeModal);
 
-  if (target.closest('.modal__close') || target === modalItem) {
-    hideModalItem();
-    document.removeEventListener('keydown', closeEscModal);
-  }
-});
+// Form handlers
 
 modalSubmit.addEventListener('input', () => {
   const isValidForm = [...modalSubmit.elements].filter(elem => elem.type !== 'submit').every(elem => elem.value);
@@ -74,15 +71,11 @@ modalSubmit.addEventListener('input', () => {
   } else {
     modalBtnWarning.style.display = '';
   }
-
-
 });
 
 modalSubmit.addEventListener('submit', event => {
   event.preventDefault();
   const modalSubmitData = new FormData(modalSubmit);
-  console.log(...modalSubmitData);
   dataBase.push(modalSubmitData);
-  console.log(dataBase);
   modalSubmit.reset();
 });
