@@ -42,7 +42,6 @@ const closeModal = event => {
 
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
-  modalBtnSubmit.disabled = true;
   document.body.style.overflow = 'hidden';
   document.addEventListener('keydown', closeEscModal);
 });
@@ -65,19 +64,15 @@ modalItem.addEventListener('click', closeModal);
 modalSubmit.addEventListener('input', () => {
   const isValidForm = [...modalSubmit.elements].filter(elem => elem.type !== 'submit').every(elem => elem.value);
 
-  const defaultText = modalBtnWarning.textContent;
+  modalBtnSubmit.disabled = !isValidForm;
 
-  if (isValidForm) {
-    modalBtnSubmit.disabled = !isValidForm;
-    modalBtnWarning.style.display = 'none';
-  } else {
-    modalBtnWarning.style.display = '';
-  }
+  isValidForm ? modalBtnWarning.style.display = 'none' : modalBtnWarning.style.display = '';
 });
 
 modalSubmit.addEventListener('submit', event => {
   event.preventDefault();
   const modalSubmitData = new FormData(modalSubmit);
   dataBase.push(modalSubmitData);
+  modalBtnSubmit.disabled = true;
   modalSubmit.reset();
 });
