@@ -10,6 +10,10 @@ const modalAdd = document.querySelector('.modal__add'),
   modalItem = document.querySelector('.modal__item'),
   modalBtnWarning = document.querySelector('.modal__btn-warning');
 
+const replacer = (key, value) => key === 'image' ? value.name : value; // transform image file object to file name string
+
+const saveDB = () => localStorage.setItem('awito', JSON.stringify(dataBase, replacer));
+
 const showModalItem = event => {
   modalItem.classList.remove('hide');
   document.body.style.overflow = 'hidden';
@@ -59,13 +63,14 @@ const checkForm = event => {
   modalBtnSubmit.disabled = !isValidForm;
 
   isValidForm ? modalBtnWarning.style.display = 'none' : modalBtnWarning.style.display = '';
-}
+};
 
 modalSubmit.addEventListener('input', checkForm);
 
 modalSubmit.addEventListener('submit', event => {
   event.preventDefault();
   const modalSubmitData = new FormData(modalSubmit);
-  dataBase.push(modalSubmitData);
+  dataBase.push(Object.fromEntries(modalSubmitData));
   closeModal({ target: modalAdd });
+  saveDB();
 });
