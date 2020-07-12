@@ -1,6 +1,6 @@
 'use strict';
 
-const dataBase = [];
+const dataBase = JSON.parse(localStorage.getItem('awito')) || [];
 
 const modalAdd = document.querySelector('.modal__add'),
   addAd = document.querySelector('.add__ad'),
