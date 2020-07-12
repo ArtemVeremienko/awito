@@ -45,6 +45,30 @@ const closeModal = event => {
   }
 };
 
+const checkForm = event => {
+  const isValidForm = [...modalSubmit.elements].filter(elem => elem.type !== 'submit').every(elem => elem.value);
+
+  modalBtnSubmit.disabled = !isValidForm;
+
+  isValidForm ? modalBtnWarning.style.display = 'none' : modalBtnWarning.style.display = '';
+};
+
+const renderCard = () => {
+  catalog.textContent = '';
+
+  dataBase.forEach((item, i) => {
+    const { image, nameItem, costItem } = item;
+    catalog.insertAdjacentHTML('beforeend', `
+      <li class="card" data-id="${i}">
+        <img class="card__image" src="data:image;base64,${image}" alt="${nameItem}">
+        <div class="card__description">
+          <h3 class="card__header">${nameItem}</h3>
+          <div class="card__price">${costItem} ₽</div>
+        </div>
+      </li>`);
+  })
+};
+
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
   document.body.style.overflow = 'hidden';
@@ -66,14 +90,6 @@ modalItem.addEventListener('click', closeModal);
 
 // Form handlers
 
-const checkForm = event => {
-  const isValidForm = [...modalSubmit.elements].filter(elem => elem.type !== 'submit').every(elem => elem.value);
-
-  modalBtnSubmit.disabled = !isValidForm;
-
-  isValidForm ? modalBtnWarning.style.display = 'none' : modalBtnWarning.style.display = '';
-};
-
 modalSubmit.addEventListener('input', checkForm);
 
 modalSubmit.addEventListener('submit', event => {
@@ -83,6 +99,7 @@ modalSubmit.addEventListener('submit', event => {
   dataBase.push(Object.fromEntries(modalSubmitData));
   closeModal({ target: modalAdd });
   saveDB();
+  renderCard();
 });
 
 modalFileInput.addEventListener('change', event => {
@@ -99,10 +116,14 @@ modalFileInput.addEventListener('change', event => {
     if (infoPhoto.size < MAX_FILESIZE) {
       modalFileBtn.textContent = infoPhoto.filename;
       infoPhoto.base64 = btoa(event.target.result);
-      modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`;
+      modalImageAdd.src = `data:image/png;base64,${infoPhoto.base64}`;
     } else {
       modalFileBtn.textContent = `Файл не должен превышать ${MAX_FILESIZE / 1024}Кб`;
+      modalFileInput.value = '';
+      checkForm();
     }
 
   });
 });
+
+renderCard();
