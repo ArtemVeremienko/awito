@@ -1,5 +1,7 @@
 'use strict';
 
+const MAX_FILESIZE = 200 * 1024; // Bytes to Kb
+
 const dataBase = JSON.parse(localStorage.getItem('awito')) || [];
 
 const modalAdd = document.querySelector('.modal__add'),
@@ -8,11 +10,16 @@ const modalAdd = document.querySelector('.modal__add'),
   modalSubmit = document.querySelector('.modal__submit'),
   catalog = document.querySelector('.catalog'),
   modalItem = document.querySelector('.modal__item'),
-  modalBtnWarning = document.querySelector('.modal__btn-warning');
+  modalBtnWarning = document.querySelector('.modal__btn-warning'),
+  modalFileInput = document.querySelector('.modal__file-input'),
+  modalFileBtn = document.querySelector('.modal__file-btn'),
+  modalImageAdd = document.querySelector('.modal__image-add');
 
-const replacer = (key, value) => key === 'image' ? value.name : value; // transform image file object to file name string
+const defaultBtnText = modalFileBtn.textContent;
+const defaultImageSrc = modalImageAdd.src;
+const infoPhoto = {};
 
-const saveDB = () => localStorage.setItem('awito', JSON.stringify(dataBase, replacer));
+const saveDB = () => localStorage.setItem('awito', JSON.stringify(dataBase));
 
 const showModalItem = event => {
   modalItem.classList.remove('hide');
@@ -31,6 +38,8 @@ const closeModal = event => {
     document.removeEventListener('keydown', closeModal);
     if (target.closest('.modal__add')) {
       modalSubmit.reset();
+      modalImageAdd.src = defaultImageSrc;
+      modalFileBtn.textContent = defaultBtnText;
       checkForm();
     };
   }
@@ -70,7 +79,30 @@ modalSubmit.addEventListener('input', checkForm);
 modalSubmit.addEventListener('submit', event => {
   event.preventDefault();
   const modalSubmitData = new FormData(modalSubmit);
+  modalSubmitData.set('image', infoPhoto.base64);
   dataBase.push(Object.fromEntries(modalSubmitData));
   closeModal({ target: modalAdd });
   saveDB();
+});
+
+modalFileInput.addEventListener('change', event => {
+  const target = event.target;
+  const reader = new FileReader();
+  const file = target.files[0];
+
+  infoPhoto.filename = file.name;
+  infoPhoto.size = file.size;
+
+  reader.readAsBinaryString(file);
+
+  reader.addEventListener('load', event => {
+    if (infoPhoto.size < MAX_FILESIZE) {
+      modalFileBtn.textContent = infoPhoto.filename;
+      infoPhoto.base64 = btoa(event.target.result);
+      modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`;
+    } else {
+      modalFileBtn.textContent = `Файл не должен превышать ${MAX_FILESIZE / 1024}Кб`;
+    }
+
+  });
 });
