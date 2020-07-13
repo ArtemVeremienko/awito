@@ -1,6 +1,6 @@
 'use strict';
 
-const MAX_FILESIZE = 200 * 1024; // Bytes to Kb
+const MAX_FILESIZE = 200 * 1024; // 1 Kb = 1024 Bytes
 
 const dataBase = JSON.parse(localStorage.getItem('awito')) || [];
 
@@ -20,11 +20,6 @@ const defaultImageSrc = modalImageAdd.src;
 const infoPhoto = {};
 
 const saveDB = () => localStorage.setItem('awito', JSON.stringify(dataBase));
-
-const showModalItem = event => {
-  modalItem.classList.remove('hide');
-  document.body.style.overflow = 'hidden';
-};
 
 const closeModal = event => {
   const target = event.target;
@@ -69,6 +64,33 @@ const renderCard = () => {
   })
 };
 
+const renderModalItem = index => {
+  modalItem.textContent = '';
+
+  const { image, nameItem, descriptionItem, status, costItem } = dataBase[index];
+
+  modalItem.insertAdjacentHTML('beforeend', `
+    <div class="modal__block">
+			<h2 class="modal__header">Купить</h2>
+			<div class="modal__content">
+				<div><img class="modal__image modal__image-item" src="data:image;base64,${image}" alt="${nameItem}"></div>
+				<div class="modal__description">
+					<h3 class="modal__header-item">${nameItem}</h3>
+					<p>Состояние: <span class="modal__status-item">${status === 'old' ? 'Б/у' : 'Новый'}</span></p>
+					<p>Описание:
+						<span class="modal__description-item">${descriptionItem}</span>
+					</p>
+					<p>Цена: <span class="modal__cost-item">${costItem} ₽</span></p>
+					<button class="btn">Купить</button>
+				</div>
+			</div>
+			<button class="modal__close">&#10008;</button>
+		</div>
+  `)
+};
+
+// Modal handlers
+
 addAd.addEventListener('click', () => {
   modalAdd.classList.remove('hide');
   document.body.style.overflow = 'hidden';
@@ -82,7 +104,9 @@ catalog.addEventListener('click', event => {
 
   if (!target) return;
 
-  showModalItem();
+  renderModalItem(target.dataset.id);
+  modalItem.classList.remove('hide');
+  document.body.style.overflow = 'hidden';
   document.addEventListener('keydown', closeModal);
 });
 
