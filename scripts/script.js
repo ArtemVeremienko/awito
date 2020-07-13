@@ -13,8 +13,11 @@ const modalAdd = document.querySelector('.modal__add'),
   modalBtnWarning = document.querySelector('.modal__btn-warning'),
   modalFileInput = document.querySelector('.modal__file-input'),
   modalFileBtn = document.querySelector('.modal__file-btn'),
-  modalImageAdd = document.querySelector('.modal__image-add');
+  modalImageAdd = document.querySelector('.modal__image-add'),
+  searchInput = document.querySelector('.search__input'),
+  menuContainer = document.querySelector('.menu__container');
 
+let counter = dataBase.length || 0; // for card item id
 const defaultBtnText = modalFileBtn.textContent;
 const defaultImageSrc = modalImageAdd.src;
 const infoPhoto = {};
@@ -48,13 +51,13 @@ const checkForm = event => {
   isValidForm ? modalBtnWarning.style.display = 'none' : modalBtnWarning.style.display = '';
 };
 
-const renderCard = () => {
+const renderCard = (DB = dataBase) => {
   catalog.textContent = '';
 
-  dataBase.forEach((item, i) => {
-    const { image, nameItem, costItem } = item;
+  DB.forEach((item) => {
+    const { image, nameItem, costItem, id } = item;
     catalog.insertAdjacentHTML('beforeend', `
-      <li class="card" data-id="${i}">
+      <li class="card" data-id="${id}">
         <img class="card__image" src="data:image;base64,${image}" alt="${nameItem}">
         <div class="card__description">
           <h3 class="card__header">${nameItem}</h3>
@@ -120,6 +123,7 @@ modalSubmit.addEventListener('submit', event => {
   event.preventDefault();
   const modalSubmitData = new FormData(modalSubmit);
   modalSubmitData.set('image', infoPhoto.base64);
+  modalSubmitData.set('id', counter++);
   dataBase.push(Object.fromEntries(modalSubmitData));
   closeModal({ target: modalAdd });
   saveDB();
@@ -148,6 +152,27 @@ modalFileInput.addEventListener('change', event => {
     }
 
   });
+});
+
+searchInput.addEventListener('input', () => {
+  const valueSearch = searchInput.value.trim().toLowerCase();
+
+  if (valueSearch.length > 2) {
+    const result = dataBase.filter(item => item.nameItem.toLowerCase().includes(valueSearch) || item.descriptionItem.toLowerCase().includes(valueSearch));
+    renderCard(result);
+  } else {
+    renderCard();
+  }
+});
+
+menuContainer.addEventListener('click', event => {
+  event.preventDefault();
+  const target = event.target.closest('a');
+
+  if (!target) return;
+  const result = dataBase.filter(item => item.category === target.dataset.category);
+  renderCard(result);
+  console.log(target);
 });
 
 renderCard();
