@@ -1,6 +1,6 @@
 'use strict';
 
-const MAX_FILESIZE = 200 * 1024; // 1 Kb = 1024 Bytes
+const MAX_FILESIZE = 500 * 1024; // 1 Kb = 1024 Bytes
 
 const dataBase = JSON.parse(localStorage.getItem('awito')) || [];
 
