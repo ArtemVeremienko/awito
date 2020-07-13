@@ -172,7 +172,6 @@ menuContainer.addEventListener('click', event => {
   if (!target) return;
   const result = dataBase.filter(item => item.category === target.dataset.category);
   renderCard(result);
-  console.log(target);
 });
 
 renderCard();
