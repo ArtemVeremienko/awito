@@ -58,7 +58,7 @@ const renderCard = (DB = dataBase) => {
     const { image, nameItem, costItem, id } = item;
     catalog.insertAdjacentHTML('beforeend', `
       <li class="card" data-id="${id}">
-        <img class="card__image" src="data:image;base64,${image}" alt="${nameItem}">
+        <img class="card__image" src="data:image/png;base64,${image}" alt="${nameItem}">
         <div class="card__description">
           <h3 class="card__header">${nameItem}</h3>
           <div class="card__price">${costItem} ₽</div>
@@ -76,7 +76,7 @@ const renderModalItem = index => {
     <div class="modal__block">
 			<h2 class="modal__header">Купить</h2>
 			<div class="modal__content">
-				<div><img class="modal__image modal__image-item" src="data:image;base64,${image}" alt="${nameItem}"></div>
+				<div><img class="modal__image modal__image-item" src="data:image/png;base64,${image}" alt="${nameItem}"></div>
 				<div class="modal__description">
 					<h3 class="modal__header-item">${nameItem}</h3>
 					<p>Состояние: <span class="modal__status-item">${status === 'old' ? 'Б/у' : 'Новый'}</span></p>
